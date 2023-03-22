@@ -59,6 +59,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
             hip_yz_right     = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,       landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
             shoulder_yz_right = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
             elbow_yz_right    = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+            wrist_yz_right    = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y ]
 
             hip_xy_left      = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
             shoulder_xy_left  = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
