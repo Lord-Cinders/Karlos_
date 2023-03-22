@@ -24,13 +24,14 @@ def calculate_angle(a,b,c):
 
 # Network setup      
 import paho.mqtt.publish as publish
+#webbrowser.open_new_tab("http://172.27.137.89/html")
 MQTT_SERVER = "192.168.0.102"
 MQTT_PATH = "test_channel"
     
 cap = cv2.VideoCapture(0)
 
 ## Setup mediapipe instance
-with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, model_complexity=2) as pose:
     while cap.isOpened():
         ret, frame = cap.read()
         
@@ -47,32 +48,49 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
         
         # Extract landmarks
         try:
-            landmarks = results.pose_landmarks.landmark
+            landmarks = results.pose_world_landmarks.landmark
             
             # Get coordinates
-            hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-            shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-            elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-            wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+            hip_xy_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+            shoulder_xy_right  = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+            elbow_xy_right    = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y ]
+            wrist_xy_right    = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y ]
             
+            hip_yz_right     = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,       landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+            shoulder_yz_right = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+            elbow_yz_right    = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+
+            hip_xy_left      = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+            shoulder_xy_left  = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+            elbow_xy_left     = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,     landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y ]
+            wrist_xy_left    = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y ]
+            
+            hip_yz_left       = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+            shoulder_yz_left  = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+            elbow_yz_left     = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+
+
             # Calculate Shoulder angle
-            Shoulder_angle = calculate_angle(hip, shoulder, elbow)
-            print("Shoulder: ", Shoulder_angle)
+            Shoulder_angle_xy_right = calculate_angle(hip_xy_right, shoulder_xy_right, elbow_xy_right)
+            Shoulder_angle_yz_right = calculate_angle(hip_yz_right, shoulder_yz_right, elbow_yz_right)
+            print("Shoulder: ", Shoulder_angle_xy_right, Shoulder_angle_yz_right)
             
             # Calculate elbow angle
-            Elbow_angle = calculate_angle(shoulder, elbow, wrist)
-            print("Elbow: ",Elbow_angle)
-            
+            Elbow_angle_xy_right = calculate_angle(shoulder_xy_right, elbow_xy_right, wrist_xy_right)
+            Elbow_angle_yz_right = calculate_angle(shoulder_yz_right, elbow_yz_right, wrist_yz_right)
+            #print("Elbow: ",Elbow_angle_xy_right, Elbow_angle_yz_right)
+            Elbow_angles = str(Elbow_angle_xy_right) + ',' + str(Elbow_angle_yz_right)
+
             # pushes data into raspberry pi
-            #publish.single(MQTT_PATH, str(Elbow_angle) + " " + str(Shoulder_angle), hostname=MQTT_SERVER) 
+            #publish.single(MQTT_PATH, str(Shoulder_angle_xy_right) + " " + str(Shoulder_angle_yz_right), hostname=MQTT_SERVER) 
 
             # Visualize angle
-            cv2.putText(image, str(Elbow_angle), 
-                           tuple(np.multiply(elbow, [640, 480]).astype(int)), 
+            cv2.putText(image, str(Elbow_angle_yz_right), 
+                           tuple(np.multiply(elbow_yz_right, [640, 480]).astype(int)), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                 )
-            cv2.putText(image, str(Shoulder_angle), 
-                           tuple(np.multiply(shoulder, [640, 480]).astype(int)), 
+            cv2.putText(image, str(Shoulder_angle_yz_right), 
+                           tuple(np.multiply(shoulder_yz_right, [640, 480]).astype(int)), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                 )
                        
@@ -87,7 +105,6 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                                  )               
         
         cv2.imshow('Mediapipe Feed', image)
-
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
 
