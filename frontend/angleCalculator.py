@@ -2,9 +2,39 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
+import sys
+import re
 from controller import XboxController
+import paho.mqtt.publish as publish
 
+POSEFLAG = True
+CONTROLLERFLAG = False
+NETWORKFLAG = False
+MQTTSERVER = "192.168.0.102"
+MQTTPATH = "test_channel"
 
+if(len(sys.argv) > 1):
+
+    if(sys.argv.count('-n') == 1 or sys.argv.count('--network') == 1):
+            try:
+                arg_index = sys.argv.index('-n') 
+                ipexp = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+                NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
+                print(NETWORKFLAG)
+            except:
+                arg_index = sys.argv.index('--network') 
+                NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
+                print(NETWORKFLAG)
+
+    if(sys.argv.count('-s') == 1 or sys.argv.count('--start') == 1):
+            try:
+                arg_index = sys.argv.index('-s') 
+                CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
+                print(NETWORKFLAG)
+            except:
+                arg_index = sys.argv.index('--start') 
+                NETWORKFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
+                print(NETWORKFLAG)
 
 
 mp_drawing = mp.solutions.drawing_utils
@@ -27,17 +57,18 @@ def calculate_angle(a,b,c):
 
 
 # Network setup      
-import paho.mqtt.publish as publish
-#webbrowser.open_new_tab("http://172.27.137.89/html")
-MQTT_SERVER = "192.168.0.102"
-MQTT_PATH = "test_channel"
 
-POSEFLAG = True
-CONTROLLERFLAG = False
-NETWORKFLAG = False
+#webbrowser.open_new_tab("http://172.27.137.89/html")
+
+
+
 
 cap = cv2.VideoCapture(0)
 joy = XboxController()
+
+if(CONTROLLERFLAG):
+    joy.ControllerFlag = 1     
+
 previous_inputs = [0, 0, 0, 0, 0]
 current_inputs = [0, 0, 0, 0, 0]
 passed_time = time.mktime(time.gmtime())
@@ -99,25 +130,25 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 Shoulder_angle_xy_right = str(calculate_angle(hip_xy_right, shoulder_xy_right, elbow_xy_right))
                 Shoulder_angle_yz_right = str(calculate_angle(hip_yz_right, shoulder_yz_right, elbow_yz_right))
                 #print("Right Shoulder: ", Shoulder_angle_xy_right, Shoulder_angle_yz_right)
-                Right_Shoulder_angles = str(Shoulder_angle_xy_right) + ',' + str(Shoulder_angle_yz_right)     
+                Right_Shoulder_angles   = str(Shoulder_angle_xy_right) + ',' + str(Shoulder_angle_yz_right)     
                         
                 # Calculate right elbow angle
                 Elbow_angle_xy_right = str(calculate_angle(shoulder_xy_right, elbow_xy_right, wrist_xy_right))
                 Elbow_angle_yz_right = str(calculate_angle(shoulder_yz_right, elbow_yz_right, wrist_yz_right))
                 #print("Right Elbow: ",Elbow_angle_xy_right, Elbow_angle_yz_right)
-                Right_Elbow_angles = str(Elbow_angle_xy_right) + ',' + str(Elbow_angle_yz_right)
+                Right_Elbow_angles   = str(Elbow_angle_xy_right) + ',' + str(Elbow_angle_yz_right)
 
                 # Calculate left Shoulder angle
                 Shoulder_angle_xy_left = str(calculate_angle(hip_xy_left, shoulder_xy_left, elbow_xy_left))
                 Shoulder_angle_yz_left = str(calculate_angle(hip_yz_left, shoulder_yz_left, elbow_yz_left))
                 #print("Left Shoulder: ", Shoulder_angle_xy_left, Shoulder_angle_yz_left)
-                Left_Shoulder_angles = str(Shoulder_angle_xy_left) + ',' + str(Shoulder_angle_yz_left)
+                Left_Shoulder_angles   = str(Shoulder_angle_xy_left) + ',' + str(Shoulder_angle_yz_left)
                 
                 # Calculate left elbow angle and nose
                 Elbow_angle_xy_left = str(calculate_angle(shoulder_xy_left, elbow_xy_left, wrist_xy_left))
                 Elbow_angle_yz_left = str(calculate_angle(shoulder_yz_left, elbow_yz_left, wrist_yz_left))
                 #print("Nose: ", nose_xyz)
-                Left_Elbow_angles = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
+                Left_Elbow_angles   = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
 
                 payload = Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
 
@@ -172,10 +203,10 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
 
         # pushes data into raspberry pi
             if (joy.ControllerFlag != 1 and NETWORKFLAG):
-                publish.single(MQTT_PATH, payload, hostname=MQTT_SERVER) 
+                publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
             
             elif(joy.ControllerFlag == 1 and NETWORKFLAG):
-                publish.single(MQTT_PATH, payload, hostname=MQTT_SERVER)
+                publish.single(MQTTPATH, payload, hostname=MQTTSERVER)
 
         passed_time = current_time 
 
