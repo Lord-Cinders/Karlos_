@@ -120,7 +120,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 Left_Elbow_angles = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
 
                 payload = Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
-                print(payload)
+            
 
             else:
                 #print(current_inputs)
