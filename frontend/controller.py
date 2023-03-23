@@ -37,7 +37,7 @@ class XboxController(object):
         self._monitor_thread.daemon = True
         self._monitor_thread.start()
 
-    # Return the buttons/triggers that you care about in this methode
+    # Return the buttons/triggers state
     def read(self): 
         left_x       = self.LeftJoystickX
         left_y       = self.LeftJoystickY
@@ -59,13 +59,13 @@ class XboxController(object):
             events = get_gamepad()
             for event in events:
                 if event.code == 'ABS_Y':
-                    self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
                 elif event.code == 'ABS_X':
-                    self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
                 elif event.code == 'ABS_RY':
-                    self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
                 elif event.code == 'ABS_RX':
-                    self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
                 elif event.code == 'ABS_Z':
                     self.LeftTrigger = event.state 
                 elif event.code == 'ABS_RZ':
@@ -77,9 +77,9 @@ class XboxController(object):
                 elif event.code == 'BTN_SOUTH':
                     self.A = event.state
                 elif event.code == 'BTN_NORTH':
-                    self.Y = event.state #previously switched with X
+                    self.Y = event.state 
                 elif event.code == 'BTN_WEST':
-                    self.X = event.state #previously switched with Y
+                    self.X = event.state 
                 elif event.code == 'BTN_EAST':
                     self.B = event.state
                 elif event.code == 'BTN_THUMBL':

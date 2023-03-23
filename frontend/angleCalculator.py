@@ -124,12 +124,12 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
 
             else:
                 #print(current_inputs)
-                shoulder_left_dxy   = str(current_inputs[0]     // 12)
-                shoulder__left_dzy  = str(current_inputs[1]     // 12)
-                elbow_left          = str((current_inputs[2]    // 25) * -current_inputs[3])
-                shoulder_right_dxy  = str(current_inputs[4]     // 12)
-                shoulder_right_dzy  = str(current_inputs[5]     // 12)
-                elbow_right         = str((current_inputs[6]    // 25) * -current_inputs[7])
+                shoulder_left_dxy   = str(current_inputs[0]     // 12)                       # Normalize to -11 to 10
+                shoulder__left_dzy  = str(current_inputs[1]     // 12)                       # Normalize to -11 to 10
+                elbow_left          = str((current_inputs[2]    // 25) * -current_inputs[3]) # Normalize to -10 to 10
+                shoulder_right_dxy  = str(current_inputs[4]     // 12)                       # Normalize to -11 to 10
+                shoulder_right_dzy  = str(current_inputs[5]     // 12)                       # Normalize to -11 to 10
+                elbow_right         = str((current_inputs[6]    // 25) * -current_inputs[7]) # Normalize to -10 to 10
                 
                 payload = shoulder_right_dxy + ',' + shoulder_right_dzy + ',' + elbow_right + ',' + shoulder_left_dxy + ',' + shoulder__left_dzy + ',' + elbow_left
             
