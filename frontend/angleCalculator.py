@@ -20,7 +20,9 @@ if(len(sys.argv) > 1):
         print("--network [ip of subscriber]   | --network <local> : sets the ip address of the pi subscriber    <default: runs on local>")
         print("-s <controller>                | -s <pose>         : sets the control    <default: runs with controller>")
         print("-start <controller>            | -start <pose>     : sets the control    <default: runs with controller>")
-        
+        print("-f /path/to/file                                   : reads config data from a file")
+        print("-file /path/to/file                                : reads config data from a file")
+
 
     if(sys.argv.count('-n') == 1 or sys.argv.count('--network') == 1):
     
