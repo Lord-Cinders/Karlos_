@@ -10,32 +10,38 @@ import paho.mqtt.publish as publish
 POSEFLAG = True
 CONTROLLERFLAG = False
 NETWORKFLAG = False
-MQTTSERVER = "192.168.0.102"
+MQTTSERVER = ""
 MQTTPATH = "test_channel"
 
 if(len(sys.argv) > 1):
+    if (sys.argv[1] == "-h" or sys.argv[1] == "--help"):
+        print("Available arguements:")
+        print("-n [ip of subscriber]          | -n <local>        : sets the ip address of the pi subscriber    <default: runs on local>")
+        print("--network [ip of subscriber]   | --network <local> : sets the ip address of the pi subscriber    <default: runs on local>")
+        print("-s <controller>                | -s <pose>         : sets the control    <default: runs with controller>")
+        print("-start <controller>            | -start <pose>     : sets the control    <default: runs with controller>")
+        
 
     if(sys.argv.count('-n') == 1 or sys.argv.count('--network') == 1):
-            
-            ipexp = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
-            try:
-                arg_index = sys.argv.index('-n') 
-                NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
-                print(NETWORKFLAG)
-            except:
-                arg_index = sys.argv.index('--network') 
-                NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
-                print(NETWORKFLAG)
+    
+        ipexp = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+        try:
+            arg_index = sys.argv.index('-n') 
+        except:
+            arg_index = sys.argv.index('--network') 
+
+        NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
+        MQTTSERVER = sys.argv[arg_index + 1]
+        print("your subscriber ip has been set to:", (sys.argv[arg_index + 1]))
 
     if(sys.argv.count('-s') == 1 or sys.argv.count('--start') == 1):
-            try:
-                arg_index = sys.argv.index('-s') 
-                CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
-                print(NETWORKFLAG)
-            except:
-                arg_index = sys.argv.index('--start') 
-                NETWORKFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
-                print(NETWORKFLAG)
+        try:
+            arg_index = sys.argv.index('-s') 
+        except:
+            arg_index = sys.argv.index('--start') 
+
+        CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
+        print("your default control has been set to:", (sys.argv[arg_index + 1]))        
 
 
 mp_drawing = mp.solutions.drawing_utils
