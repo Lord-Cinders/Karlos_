@@ -41,7 +41,7 @@ joy = XboxController()
 previous_inputs = [0, 0, 0, 0, 0]
 current_inputs = [0, 0, 0, 0, 0]
 passed_time = time.mktime(time.gmtime())
-
+payload = ""
 ## Setup mediapipe instance
 with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, model_complexity=2) as pose:
     while cap.isOpened():
@@ -62,10 +62,10 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
         current_time = time.mktime(time.gmtime())
 
         current_inputs = joy.read()
-        if current_inputs[-1] == 1 and current_time - passed_time >= 1:
+        if current_inputs[-2] == 1 and current_time - passed_time >= 1:
             joy.ControllerFlag *= -1
         
-        print(joy.ControllerFlag)
+        #print(joy.ControllerFlag)
 
         # Extract landmarks
         try:
@@ -82,7 +82,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
             elbow_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
             wrist_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y ]
 
-            nose_xyz = [landmarks[mp_pose.PoseLandmark.NOSE.value].x, landmarks[mp_pose.PoseLandmark.NOSE.value].y, landmarks[mp_pose.PoseLandmark.NOSE.value].z]
+            nose_xyz = [landmarks[mp_pose.PoseLandmark.NOSE.value].x, landmarks[mp_pose.PoseLandmark.NOSE.value].z, landmarks[mp_pose.PoseLandmark.NOSE.value].y]
 
             hip_xy_left         = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
             shoulder_xy_left    = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
@@ -96,40 +96,50 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
 
             if(joy.ControllerFlag == -1):
                 # Calculate right Shoulder angle
-                Shoulder_angle_xy_right = calculate_angle(hip_xy_right, shoulder_xy_right, elbow_xy_right)
-                Shoulder_angle_yz_right = calculate_angle(hip_yz_right, shoulder_yz_right, elbow_yz_right)
-                print("Right Shoulder: ", Shoulder_angle_xy_right, Shoulder_angle_yz_right)
+                Shoulder_angle_xy_right = str(calculate_angle(hip_xy_right, shoulder_xy_right, elbow_xy_right))
+                Shoulder_angle_yz_right = str(calculate_angle(hip_yz_right, shoulder_yz_right, elbow_yz_right))
+                #print("Right Shoulder: ", Shoulder_angle_xy_right, Shoulder_angle_yz_right)
                 Right_Shoulder_angles = str(Shoulder_angle_xy_right) + ',' + str(Shoulder_angle_yz_right)     
                         
                 # Calculate right elbow angle
-                Elbow_angle_xy_right = calculate_angle(shoulder_xy_right, elbow_xy_right, wrist_xy_right)
-                Elbow_angle_yz_right = calculate_angle(shoulder_yz_right, elbow_yz_right, wrist_yz_right)
-                print("Right Elbow: ",Elbow_angle_xy_right, Elbow_angle_yz_right)
+                Elbow_angle_xy_right = str(calculate_angle(shoulder_xy_right, elbow_xy_right, wrist_xy_right))
+                Elbow_angle_yz_right = str(calculate_angle(shoulder_yz_right, elbow_yz_right, wrist_yz_right))
+                #print("Right Elbow: ",Elbow_angle_xy_right, Elbow_angle_yz_right)
                 Right_Elbow_angles = str(Elbow_angle_xy_right) + ',' + str(Elbow_angle_yz_right)
 
                 # Calculate left Shoulder angle
-                Shoulder_angle_xy_left = calculate_angle(hip_xy_left, shoulder_xy_left, elbow_xy_left)
-                Shoulder_angle_yz_left = calculate_angle(hip_yz_left, shoulder_yz_left, elbow_yz_left)
-                print("Left Shoulder: ", Shoulder_angle_xy_left, Shoulder_angle_yz_left)
+                Shoulder_angle_xy_left = str(calculate_angle(hip_xy_left, shoulder_xy_left, elbow_xy_left))
+                Shoulder_angle_yz_left = str(calculate_angle(hip_yz_left, shoulder_yz_left, elbow_yz_left))
+                #print("Left Shoulder: ", Shoulder_angle_xy_left, Shoulder_angle_yz_left)
                 Left_Shoulder_angles = str(Shoulder_angle_xy_left) + ',' + str(Shoulder_angle_yz_left)
                 
                 # Calculate left elbow angle and nose
-                Elbow_angle_xy_left = calculate_angle(shoulder_xy_left, elbow_xy_left, wrist_xy_left)
-                Elbow_angle_yz_left = calculate_angle(shoulder_yz_left, elbow_yz_left, wrist_yz_left)
-                print("Left Elbow: ",Elbow_angle_xy_left, Elbow_angle_yz_left)
-                print("Nose: ", nose_xyz)
+                Elbow_angle_xy_left = str(calculate_angle(shoulder_xy_left, elbow_xy_left, wrist_xy_left))
+                Elbow_angle_yz_left = str(calculate_angle(shoulder_yz_left, elbow_yz_left, wrist_yz_left))
+                #print("Nose: ", nose_xyz)
                 Left_Elbow_angles = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
 
-            else:
-                print(current_inputs)
+                payload = Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
+                print(payload)
 
+            else:
+                #print(current_inputs)
+                shoulder_left_dxy   = str(current_inputs[0]     // 12)
+                shoulder__left_dzy  = str(current_inputs[1]     // 12)
+                elbow_left          = str((current_inputs[2]    // 25) * -current_inputs[3])
+                shoulder_right_dxy  = str(current_inputs[4]     // 12)
+                shoulder_right_dzy  = str(current_inputs[5]     // 12)
+                elbow_right         = str((current_inputs[6]    // 25) * -current_inputs[7])
+                
+                payload = shoulder_right_dxy + ',' + shoulder_right_dzy + ',' + elbow_right + ',' + shoulder_left_dxy + ',' + shoulder__left_dzy + ',' + elbow_left
             
+            print(payload)
             # pushes data into raspberry pi
             if (joy.ControllerFlag != 1 and NETWORKFLAG):
-                publish.single(MQTT_PATH, str(Shoulder_angle_xy_right) + " " + str(Shoulder_angle_yz_right), hostname=MQTT_SERVER) 
+                publish.single(MQTT_PATH, payload, hostname=MQTT_SERVER) 
             
             elif(joy.ControllerFlag == 1 and NETWORKFLAG):
-                publish.single(MQTT_PATH, str(current_inputs), hostname=MQTT_SERVER)
+                publish.single(MQTT_PATH, payload, hostname=MQTT_SERVER)
 
             # Visualize angle
             cv2.putText(image, str(Elbow_angle_yz_right), 
@@ -165,7 +175,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                                  )               
         
         cv2.imshow('Mediapipe Feed', image)
-        if cv2.waitKey(10) & 0xFF == ord('q') or current_inputs[4]:
+        if cv2.waitKey(10) & 0xFF == ord('q') or current_inputs[-1]:
             break
         
         passed_time = current_time 
