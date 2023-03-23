@@ -1,2 +1,2 @@
 # Karlos_
-karlos is a 2 DOF arm which tries to mimic the motion of a person
+based on purpose robot from rick and morty. Moves by capturing the motion of the operator or using a controller.
