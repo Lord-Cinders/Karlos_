@@ -30,7 +30,7 @@ class XboxController(object):
         self.RightDPad = 0
         self.UpDPad = 0
         self.DownDPad = 0
-        self.ControllerFlag = -1
+        self.ControllerFlag = 1
 
         # Runs seperately from other processes
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
@@ -39,16 +39,20 @@ class XboxController(object):
 
     # Return the buttons/triggers that you care about in this methode
     def read(self): 
-        left_x = self.LeftJoystickX
-        left_y = self.LeftJoystickY
-        right_x = self.RightJoystickX
-        right_y = self.RightJoystickY
-        # a = self.A
-        # b = self.X # b=1, x=2
-        y = self.Y
-        rb = self.RightBumper
-
-        return [left_x, left_y, right_x, right_y, y, rb]
+        left_x       = self.LeftJoystickX
+        left_y       = self.LeftJoystickY
+        left_trigg   = self.LeftTrigger
+        left_bumper  = 1 if self.LeftBumper == 1 else -1
+        right_x      = self.RightJoystickX
+        right_y      = self.RightJoystickY
+        right_trigg  = self.RightTrigger
+        right_bumper = 1 if self.RightBumper == 1 else -1
+        a            = self.A
+        b            = self.B
+        y            = self.Y
+        x            = self.X        
+        
+        return [left_x, left_y, left_trigg, left_bumper, right_x, right_y, right_trigg, right_bumper, a, b, x, y]
 
     def _monitor_controller(self):
         while True:
@@ -63,9 +67,9 @@ class XboxController(object):
                 elif event.code == 'ABS_RX':
                     self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
                 elif event.code == 'ABS_Z':
-                    self.LeftTrigger = event.state / XboxController.MAX_TRIG_VAL # normalize between 0 and 1
+                    self.LeftTrigger = event.state 
                 elif event.code == 'ABS_RZ':
-                    self.RightTrigger = event.state / XboxController.MAX_TRIG_VAL # normalize between 0 and 1
+                    self.RightTrigger = event.state 
                 elif event.code == 'BTN_TL':
                     self.LeftBumper = event.state
                 elif event.code == 'BTN_TR':
