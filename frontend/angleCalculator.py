@@ -43,7 +43,6 @@ if(len(sys.argv) > 1):
         CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
         print("your default control has been set to:", (sys.argv[arg_index + 1]))        
 
-
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
