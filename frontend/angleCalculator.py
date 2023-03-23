@@ -16,9 +16,10 @@ MQTTPATH = "test_channel"
 if(len(sys.argv) > 1):
 
     if(sys.argv.count('-n') == 1 or sys.argv.count('--network') == 1):
+            
+            ipexp = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
             try:
                 arg_index = sys.argv.index('-n') 
-                ipexp = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
                 NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
                 print(NETWORKFLAG)
             except:
