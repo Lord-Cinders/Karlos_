@@ -67,6 +67,9 @@ class XboxController(object):
             with self.lock:
                 self.run = True
 
+        else:
+            self.run = False
+
     def _monitor_controller(self):
         with self.lock:
             while self.run:
