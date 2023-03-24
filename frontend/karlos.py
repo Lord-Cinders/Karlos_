@@ -68,7 +68,7 @@ def karlos(sys):
             if(joy.ControllerFlag == -1):
                 payload = pose_paylaod(results, mp_pose)
             
-            else:
+            elif( payload == - 1 or joy.ControllerFlag == 1):
                 payload = joy.calculate_payload(current_inputs)
                 
             print(payload)
