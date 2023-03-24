@@ -16,6 +16,7 @@ CAMERAFLAG      = False
 MQTTSERVER      = ""
 MQTTPATH        = "test_channel"
 
+# CLI Options
 if(len(sys.argv) > 1):
     if (sys.argv[1] == "-h" or sys.argv[1] == "--help"):
         print("Useage:")
@@ -38,19 +39,23 @@ if(len(sys.argv) > 1):
             arg_index = sys.argv.index('-n') 
         except:
             arg_index = sys.argv.index('--network') 
-
-        NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
-        MQTTSERVER = sys.argv[arg_index + 1]
-        print("your subscriber ip has been set to:", (sys.argv[arg_index + 1]))
+        try:
+            NETWORKFLAG = True if ( sys.argv[arg_index + 1] != 'local' and re.search(ipexp, sys.argv[arg_index + 1])) else False
+            MQTTSERVER = sys.argv[arg_index + 1]
+            print("your subscriber ip has been set to:", (sys.argv[arg_index + 1]))
+        except:
+            print("Error: No input has been given for the flag '-n'")
 
     if(sys.argv.count('-s') == 1 or sys.argv.count('--start') == 1):
         try:
             arg_index = sys.argv.index('-s') 
         except:
             arg_index = sys.argv.index('--start') 
-
-        CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
-        print("your default control has been set to:", (sys.argv[arg_index + 1]))    
+        try:
+            CONTROLLERFLAG = sys.argv[arg_index + 1] == 'controller'
+            print("your default control has been set to:", (sys.argv[arg_index + 1]))    
+        except:
+            print("Error: No input has been given for the flag '-s'")
 
     if(sys.argv.count('-c') == 1 or sys.argv.count('--camera') == 1):
         try:
@@ -81,9 +86,6 @@ if(len(sys.argv) > 1):
             print("Error opening config file: switching to defaults")
 
 
-mp_drawing = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
-
 #calculating the angle
 def calculate_angle(a,b,c):
     a = np.array(a) # First
@@ -102,6 +104,8 @@ def calculate_angle(a,b,c):
 if(NETWORKFLAG and CAMERAFLAG):
     webbrowser.open_new_tab("http://172.27.137.89/html")
 
+mp_drawing = mp.solutions.drawing_utils
+mp_pose = mp.solutions.pose
 cap = cv2.VideoCapture(0)
 joy = XboxController()
 
@@ -235,7 +239,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
             break
 
         # pushes data into raspberry pi
-            if (NETWORKFLAG):
+            if (NETWORKFLAG and current_time - passed_time >= 1):
                 publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
     
         passed_time = current_time 
