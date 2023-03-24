@@ -4,3 +4,4 @@ __pycache__
 test.config
 backend/redundant
 frontend/redundant
+adafruit_servokit.py

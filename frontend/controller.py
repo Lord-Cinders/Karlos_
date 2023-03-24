@@ -98,6 +98,7 @@ class XboxController(object):
                     self.UpDPad = event.state
                 elif event.code == 'BTN_TRIGGER_HAPPY4':
                     self.DownDPad = event.state
+
     def calculate_payload(self, current_inputs):
             #print(current_inputs)
             shoulder_left_dxy   = str(current_inputs[0]     // 12 * -1)                  # Normalize to -11 to 10
