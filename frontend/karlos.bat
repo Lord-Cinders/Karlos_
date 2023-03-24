@@ -1,4 +1,5 @@
 @ECHO OFF
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 SET myPath=%~dp0
 
@@ -30,20 +31,19 @@ ECHO You have Python set up.
 
 IF -%1-==-- GOTO :HELP
 
-IF -%2-==-- (
-    ECHO,
-    python "%myPath%main.py" %1 > nul 2>&1
-    ECHO,
+SET args=
+for %%x in (%*) do (
+    IF %%x==--debug GOTO :DEBUGMODE
+    SET args=!args!%%x 
 )
 
-IF %2 == --debug GOTO :DEBUGMODE
-
+python "%myPath%main.py" %args% > nul 2>&1
 
 GOTO :EOF
 
 :DEBUGMODE
 ECHO,
-python "%myPath%main.py" %1 
+python "%myPath%main.py" %args%
 ECHO,
 GOTO :EOF
 
