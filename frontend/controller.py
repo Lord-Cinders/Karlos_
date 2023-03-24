@@ -31,8 +31,6 @@ class XboxController(object):
         self.UpDPad = 0
         self.DownDPad = 0
         self.ControllerFlag = 1
-        self.run = False
-        self.lock = threading.Lock()
 
         # Runs seperately from other processes
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
@@ -55,58 +53,51 @@ class XboxController(object):
         x            = self.X        
         
         return [left_x, left_y, left_trigg, left_bumper, right_x, right_y, right_trigg, right_bumper, a, b, x, y]
-    
-    #Enable/Disable the Monitor Controller
-    def changeControllerState(self):
-        with self.lock:
-            self.run = not self.run
 
     def _monitor_controller(self):
-        with self.lock:
-            while self.run:
-                events = get_gamepad()
-                for event in events:
-                    if event.code == 'ABS_Y':
-                        self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
-                    elif event.code == 'ABS_X':
-                        self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
-                    elif event.code == 'ABS_RY':
-                        self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
-                    elif event.code == 'ABS_RX':
-                        self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
-                    elif event.code == 'ABS_Z':
-                        self.LeftTrigger = event.state 
-                    elif event.code == 'ABS_RZ':
-                        self.RightTrigger = event.state 
-                    elif event.code == 'BTN_TL':
-                        self.LeftBumper = event.state
-                    elif event.code == 'BTN_TR':
-                        self.RightBumper = event.state
-                    elif event.code == 'BTN_SOUTH':
-                        self.A = event.state
-                    elif event.code == 'BTN_NORTH':
-                        self.Y = event.state 
-                    elif event.code == 'BTN_WEST':
-                        self.X = event.state 
-                    elif event.code == 'BTN_EAST':
-                        self.B = event.state
-                    elif event.code == 'BTN_THUMBL':
-                        self.LeftThumb = event.state
-                    elif event.code == 'BTN_THUMBR':
-                        self.RightThumb = event.state
-                    elif event.code == 'BTN_SELECT':
-                        self.Back = event.state
-                    elif event.code == 'BTN_START':
-                        self.Start = event.state
-                    elif event.code == 'BTN_TRIGGER_HAPPY1':
-                        self.LeftDPad = event.state
-                    elif event.code == 'BTN_TRIGGER_HAPPY2':
-                        self.RightDPad = event.state
-                    elif event.code == 'BTN_TRIGGER_HAPPY3':
-                        self.UpDPad = event.state
-                    elif event.code == 'BTN_TRIGGER_HAPPY4':
-                        self.DownDPad = event.state
-    
+        while True:
+            events = get_gamepad()
+            for event in events:
+                if event.code == 'ABS_Y':
+                    self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
+                elif event.code == 'ABS_X':
+                    self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
+                elif event.code == 'ABS_RY':
+                    self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
+                elif event.code == 'ABS_RX':
+                    self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -128 and 127
+                elif event.code == 'ABS_Z':
+                    self.LeftTrigger = event.state 
+                elif event.code == 'ABS_RZ':
+                    self.RightTrigger = event.state 
+                elif event.code == 'BTN_TL':
+                    self.LeftBumper = event.state
+                elif event.code == 'BTN_TR':
+                    self.RightBumper = event.state
+                elif event.code == 'BTN_SOUTH':
+                    self.A = event.state
+                elif event.code == 'BTN_NORTH':
+                    self.Y = event.state 
+                elif event.code == 'BTN_WEST':
+                    self.X = event.state 
+                elif event.code == 'BTN_EAST':
+                    self.B = event.state
+                elif event.code == 'BTN_THUMBL':
+                    self.LeftThumb = event.state
+                elif event.code == 'BTN_THUMBR':
+                    self.RightThumb = event.state
+                elif event.code == 'BTN_SELECT':
+                    self.Back = event.state
+                elif event.code == 'BTN_START':
+                    self.Start = event.state
+                elif event.code == 'BTN_TRIGGER_HAPPY1':
+                    self.LeftDPad = event.state
+                elif event.code == 'BTN_TRIGGER_HAPPY2':
+                    self.RightDPad = event.state
+                elif event.code == 'BTN_TRIGGER_HAPPY3':
+                    self.UpDPad = event.state
+                elif event.code == 'BTN_TRIGGER_HAPPY4':
+                    self.DownDPad = event.state
     def calculate_payload(self, current_inputs):
             #print(current_inputs)
             shoulder_left_dxy   = str(current_inputs[0]     // 12 * -1)                  # Normalize to -11 to 10
