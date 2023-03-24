@@ -63,6 +63,7 @@ if(len(sys.argv) > 1):
                 data = {data[i][0]: data[i][1] for i in range(len(data))}
                 CONTROLLERFLAG  = data["CONTROLLERFLAG"] == "True"
                 NETWORKFLAG     = data["NETWORKFLAG"]    == "True"
+                CAMERAFLAG      = data["CAMERAFLAG"]     == "True"
                 MQTTSERVER      = data["MQTTSERVER"].strip('\"')
                 MQTTPATH        = data["MQTTPATH"].strip('\"')
                 config.close()
@@ -131,6 +132,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 landmarks = results.pose_world_landmarks.landmark
                 
                 # Get coordinates
+                # Right Hand
                 hip_xy_right        = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
                 shoulder_xy_right   = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                 elbow_xy_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y ]
@@ -141,8 +143,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 elbow_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                 wrist_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y ]
 
-                nose_xyz = [landmarks[mp_pose.PoseLandmark.NOSE.value].x, landmarks[mp_pose.PoseLandmark.NOSE.value].z, landmarks[mp_pose.PoseLandmark.NOSE.value].y]
-
+                # Left Hand
                 hip_xy_left         = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
                 shoulder_xy_left    = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                 elbow_xy_left       = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,     landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y ]
@@ -197,12 +198,8 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                             tuple(np.multiply(shoulder_xy_left, [640, 480]).astype(int)), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                     )
-                cv2.putText(image, str(nose_xyz), 
-                            tuple(np.multiply(nose_xyz, [640, 480]).astype(int)), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
-                                    )
             except:
-                pass
+                joy.ControllerFlag = 1
         
         else:
                 #print(current_inputs)
