@@ -40,8 +40,7 @@ def karlos(sys):
     passed_time = time.mktime(time.gmtime())
 
     if(CONTROLLERFLAG):
-        joy.ControllerFlag = 1     
-        joy.changeControllerState()
+        joy.ControllerFlag = 1
     
     ## Setup mediapipe instance
     with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, model_complexity=2) as pose:
@@ -57,6 +56,8 @@ def karlos(sys):
                     print("Changing to Controller")
                 joy.changeControllerState()
 
+            joy.checkController()
+            
             if current_inputs[-2] == 1 and current_time - passed_time >= 1:
                 joy.ControllerFlag *= -1
 

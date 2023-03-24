@@ -1,4 +1,4 @@
-from inputs import get_gamepad
+from inputs import get_gamepad, devices
 import math
 import threading
 
@@ -61,6 +61,11 @@ class XboxController(object):
         with self.lock:
             self.run = not self.run
 
+    def checkController(self):
+        if devices.gamepads:
+            with self.lock:
+                self.run = True
+                
     def _monitor_controller(self):
         with self.lock:
             while self.run:
