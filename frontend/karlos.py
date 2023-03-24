@@ -32,13 +32,13 @@ def karlos(sys):
     if(NETWORKFLAG and CAMERAFLAG):
         webbrowser.open_new_tab("http://172.27.137.89/html")
 
-    mp_drawing = mp.solutions.drawing_utils
-    mp_pose = mp.solutions.pose
-    cap = cv2.VideoCapture(0)
-    joy = XboxController()
-    payload = ""
-    current_inputs = [0, 0, 0, 0, 0]
-    passed_time = time.mktime(time.gmtime())
+    mp_drawing      = mp.solutions.drawing_utils
+    mp_pose         = mp.solutions.pose
+    cap             = cv2.VideoCapture(0)
+    joy             = XboxController()
+    payload         = ""
+    current_inputs  = [0, 0, 0, 0, 0]
+    passed_time     = time.mktime(time.gmtime())
 
     if(CONTROLLERFLAG):
         joy.ControllerFlag = 1     
