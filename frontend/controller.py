@@ -100,7 +100,7 @@ class XboxController(object):
                     self.DownDPad = event.state
     def calculate_payload(self, current_inputs):
             #print(current_inputs)
-            shoulder_left_dxy   = str(current_inputs[0]     // 12)                       # Normalize to -11 to 10
+            shoulder_left_dxy   = str(current_inputs[0]     // 12 * -1)                  # Normalize to -11 to 10
             shoulder__left_dzy  = str(current_inputs[1]     // 12)                       # Normalize to -11 to 10
             elbow_left          = str((current_inputs[2]    // 25) * -current_inputs[3]) # Normalize to -10 to 10
             shoulder_right_dxy  = str(current_inputs[4]     // 12)                       # Normalize to -11 to 10
