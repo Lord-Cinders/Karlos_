@@ -6,6 +6,7 @@ import paho.mqtt.publish as publish
 from pose import pose_paylaod
 from cli import parse_argv
 from controller import XboxController
+import keyboard
 
 
 def karlos(sys):
@@ -50,6 +51,13 @@ def karlos(sys):
             current_time = time.mktime(time.gmtime())
             # Controller inputs
             current_inputs = joy.read()
+
+            if keyboard.is_pressed('d'):
+                if(not joy.run):
+                    print("Changing to Controller")
+                joy.changeControllerState()
+
+            joy.checkController()
 
             if current_inputs[-2] == 1 and current_time - passed_time >= 1:
                 joy.ControllerFlag *= -1
