@@ -17,14 +17,15 @@ def karlos(sys):
     MQTTPATH        = "test_channel"
 
     data = parse_argv(sys)
-    if (data != None):
+    if data == None and len(sys.argv) > 1:
+        return 
+    if(data != None):
         CONTROLLERFLAG  = data["CONTROLLERFLAG"] == "True"
         NETWORKFLAG     = data["NETWORKFLAG"]    == "True"
         CAMERAFLAG      = data["CAMERAFLAG"]     == "True"
         MQTTSERVER      = data["MQTTSERVER"].strip('\"')
         MQTTPATH        = data["MQTTPATH"].strip('\"')
-    else:
-        return
+    
     
     # Network setup      
     if(NETWORKFLAG and CAMERAFLAG):
@@ -68,7 +69,7 @@ def karlos(sys):
             if(joy.ControllerFlag == -1):
                 payload = pose_paylaod(results, mp_pose)
             
-            elif( payload == - 1 or joy.ControllerFlag == 1):
+            if( payload == - 1 or joy.ControllerFlag == 1):
                 payload = joy.calculate_payload(current_inputs)
                 
             print(payload)
