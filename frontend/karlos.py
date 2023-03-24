@@ -6,6 +6,7 @@ import paho.mqtt.publish as publish
 from pose import pose_paylaod
 from cli import parse_argv
 from controller import XboxController
+import keyboard
 
 def karlos(sys):
     # Default ENUMS
@@ -40,6 +41,7 @@ def karlos(sys):
 
     if(CONTROLLERFLAG):
         joy.ControllerFlag = 1     
+        joy.changeControllerState()
     
     ## Setup mediapipe instance
     with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, model_complexity=2) as pose:
@@ -48,6 +50,12 @@ def karlos(sys):
             current_time = time.mktime(time.gmtime())
             # Controller inputs
             current_inputs = joy.read()
+
+            #Keybpard Input
+            if keyboard.is_pressed('d'):
+                if(not joy.run):
+                    print("Changing to Controller")
+                joy.changeControllerState()
 
             if current_inputs[-2] == 1 and current_time - passed_time >= 1:
                 joy.ControllerFlag *= -1
