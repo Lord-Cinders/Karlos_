@@ -4,24 +4,30 @@ import numpy as np
 import time
 import sys
 import re
+import webbrowser
 from controller import XboxController
 import paho.mqtt.publish as publish
 
-POSEFLAG = True
-CONTROLLERFLAG = False
-NETWORKFLAG = False
-MQTTSERVER = ""
-MQTTPATH = "test_channel"
+# Default ENUMS
+POSEFLAG        = True
+CONTROLLERFLAG  = False
+NETWORKFLAG     = False
+CAMERAFLAG      = False
+MQTTSERVER      = ""
+MQTTPATH        = "test_channel"
 
 if(len(sys.argv) > 1):
     if (sys.argv[1] == "-h" or sys.argv[1] == "--help"):
-        print("Available arguements:")
-        print("-n [ip of subscriber]          | -n <local>        : sets the ip address of the pi subscriber    <default: runs on local>")
-        print("--network [ip of subscriber]   | --network <local> : sets the ip address of the pi subscriber    <default: runs on local>")
+        print("Useage:")
+        print("karlos [options]\n")
+
+        print("Available Options:")
+        print("-n <ip of subscriber>          | -n <local>        : sets the ip address of the pi subscriber    <default: runs on local>")
+        print("--network <ip of subscriber>   | --network <local> : sets the ip address of the pi subscriber    <default: runs on local>")
         print("-s <controller>                | -s <pose>         : sets the control    <default: runs with controller>")
         print("-start <controller>            | -start <pose>     : sets the control    <default: runs with controller>")
-        print("-f /path/to/file                                   : reads config data from a file")
-        print("-file /path/to/file                                : reads config data from a file")
+        print("-rf /path/to/file                                  : reads config data from a file")
+        print("-readfile /path/to/file                            : reads config data from a file")
 
 
     if(sys.argv.count('-n') == 1 or sys.argv.count('--network') == 1):
@@ -44,6 +50,25 @@ if(len(sys.argv) > 1):
 
         CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
         print("your default control has been set to:", (sys.argv[arg_index + 1]))        
+    
+    if(sys.argv.count('-rf') == 1 or sys.argv.count('-readfile')):
+        try:
+            arg_index = sys.argv.index('-rf') 
+        except:
+            arg_index = sys.argv.index('--readfile') 
+        try:
+            with open(sys.argv[arg_index + 1]) as config:
+                data = config.read().strip().split('\n')
+                data = [i.split(" = ") for i in data]
+                data = {data[i][0]: data[i][1] for i in range(len(data))}
+                CONTROLLERFLAG  = data["CONTROLLERFLAG"] == "True"
+                NETWORKFLAG     = data["NETWORKFLAG"]    == "True"
+                MQTTSERVER      = data["MQTTSERVER"].strip('\"')
+                MQTTPATH        = data["MQTTPATH"].strip('\"')
+                config.close()
+        except:
+            print("Error opening config file: switching to defaults")
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -62,14 +87,9 @@ def calculate_angle(a,b,c):
         
     return angle 
 
-
-
 # Network setup      
-
-#webbrowser.open_new_tab("http://172.27.137.89/html")
-
-
-
+if(NETWORKFLAG and CAMERAFLAG):
+    webbrowser.open_new_tab("http://172.27.137.89/html")
 
 cap = cv2.VideoCapture(0)
 joy = XboxController()
@@ -158,7 +178,7 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 #print("Nose: ", nose_xyz)
                 Left_Elbow_angles   = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
 
-                payload = Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
+                payload = "pose," + Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
 
                 # Visualize angle
                 cv2.putText(image, str(Elbow_angle_yz_right), 
@@ -181,10 +201,6 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                             tuple(np.multiply(nose_xyz, [640, 480]).astype(int)), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                     )
-                # Render detections
-                
-            
-                
             except:
                 pass
         
@@ -197,9 +213,11 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
                 shoulder_right_dzy  = str(current_inputs[5]     // 12)                       # Normalize to -11 to 10
                 elbow_right         = str((current_inputs[6]    // 25) * -current_inputs[7]) # Normalize to -10 to 10
                 
-                payload = shoulder_right_dxy + ',' + shoulder_right_dzy + ',' + elbow_right + ',' + shoulder_left_dxy + ',' + shoulder__left_dzy + ',' + elbow_left
+                payload = "contr," + shoulder_right_dxy + ',' + shoulder_right_dzy + ',' + elbow_right + ',' + shoulder_left_dxy + ',' + shoulder__left_dzy + ',' + elbow_left
             
         print(payload)
+
+        # Render detections
         cv2.imshow('Mediapipe Feed', image)
         mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                         mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
@@ -210,12 +228,9 @@ with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, m
             break
 
         # pushes data into raspberry pi
-            if (joy.ControllerFlag != 1 and NETWORKFLAG):
+            if (NETWORKFLAG):
                 publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
-            
-            elif(joy.ControllerFlag == 1 and NETWORKFLAG):
-                publish.single(MQTTPATH, payload, hostname=MQTTSERVER)
-
+    
         passed_time = current_time 
 
     cap.release()
