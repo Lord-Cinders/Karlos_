@@ -80,6 +80,8 @@ def parse_argv(sys):
                     data = config.read().strip().split('\n')
                     data = [i.split(" = ") for i in data]
                     data = {data[i][0]: data[i][1] for i in range(len(data))}
+                    print("Successfully loaded configuration from file")
+                    print(data)
                     config.close()
                 return data
             except:
