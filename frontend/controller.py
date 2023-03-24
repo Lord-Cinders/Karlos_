@@ -98,3 +98,14 @@ class XboxController(object):
                     self.UpDPad = event.state
                 elif event.code == 'BTN_TRIGGER_HAPPY4':
                     self.DownDPad = event.state
+    def calculate_payload(self, current_inputs):
+            #print(current_inputs)
+            shoulder_left_dxy   = str(current_inputs[0]     // 12)                       # Normalize to -11 to 10
+            shoulder__left_dzy  = str(current_inputs[1]     // 12)                       # Normalize to -11 to 10
+            elbow_left          = str((current_inputs[2]    // 25) * -current_inputs[3]) # Normalize to -10 to 10
+            shoulder_right_dxy  = str(current_inputs[4]     // 12)                       # Normalize to -11 to 10
+            shoulder_right_dzy  = str(current_inputs[5]     // 12)                       # Normalize to -11 to 10
+            elbow_right         = str((current_inputs[6]    // 25) * -current_inputs[7]) # Normalize to -10 to 10
+            
+            payload = "contr," + shoulder_right_dxy + ',' + shoulder_right_dzy + ',' + elbow_right + ',' + shoulder_left_dxy + ',' + shoulder__left_dzy + ',' + elbow_left
+            return payload
