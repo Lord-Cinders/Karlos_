@@ -24,6 +24,7 @@ def karlos(sys):
         MQTTSERVER      = data["MQTTSERVER"].strip('\"')
         MQTTPATH        = data["MQTTPATH"].strip('\"')
     print(data)
+
     # Network setup      
     if(NETWORKFLAG and CAMERAFLAG):
         webbrowser.open_new_tab("http://172.27.137.89/html")
@@ -32,20 +33,21 @@ def karlos(sys):
     mp_pose = mp.solutions.pose
     cap = cv2.VideoCapture(0)
     joy = XboxController()
+    payload = ""
+    current_inputs = [0, 0, 0, 0, 0]
+    passed_time = time.mktime(time.gmtime())
 
     if(CONTROLLERFLAG):
         joy.ControllerFlag = 1     
-
-    current_inputs = [0, 0, 0, 0, 0]
-    passed_time = time.mktime(time.gmtime())
-    payload = ""
+    
     ## Setup mediapipe instance
     with mp_pose.Pose(min_detection_confidence=0.85, min_tracking_confidence=0.85, model_complexity=2) as pose:
         while cap.isOpened():
-            # Controller inputs
-            current_time = time.mktime(time.gmtime())
 
+            current_time = time.mktime(time.gmtime())
+            # Controller inputs
             current_inputs = joy.read()
+
             if current_inputs[-2] == 1 and current_time - passed_time >= 1:
                 joy.ControllerFlag *= -1
 
@@ -71,7 +73,6 @@ def karlos(sys):
             print(payload)
 
             # Render detections
-            
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
                                             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
@@ -81,8 +82,8 @@ def karlos(sys):
                 break
 
             # pushes data into raspberry pi
-                if (NETWORKFLAG and current_time - passed_time >= 1):
-                    publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
+            if (NETWORKFLAG and current_time - passed_time >= 1):
+                publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
         
             passed_time = current_time 
 
