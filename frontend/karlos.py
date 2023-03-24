@@ -23,8 +23,9 @@ def karlos(sys):
         CAMERAFLAG      = data["CAMERAFLAG"]     == "True"
         MQTTSERVER      = data["MQTTSERVER"].strip('\"')
         MQTTPATH        = data["MQTTPATH"].strip('\"')
-    print(data)
-
+    else:
+        return
+    
     # Network setup      
     if(NETWORKFLAG and CAMERAFLAG):
         webbrowser.open_new_tab("http://172.27.137.89/html")
