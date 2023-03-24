@@ -24,8 +24,9 @@ if(len(sys.argv) > 1):
         print("Available Options:")
         print("-n <ip of subscriber>          | -n <local>        : sets the ip address of the pi subscriber    <default: runs on local>")
         print("--network <ip of subscriber>   | --network <local> : sets the ip address of the pi subscriber    <default: runs on local>")
-        print("-s <controller>                | -s <pose>         : sets the control    <default: runs with controller>")
-        print("-start <controller>            | -start <pose>     : sets the control    <default: runs with controller>")
+        print("-s <controller>                | -s <pose>         : sets the control                            <default: runs with controller>")
+        print("-start <controller>            | -start <pose>     : sets the control                            <default: runs with controller>")
+        print("-c                                                 : turns on the pi's camera                    <default: runs without camera>")
         print("-rf /path/to/file                                  : reads config data from a file")
         print("-readfile /path/to/file                            : reads config data from a file")
 
@@ -49,7 +50,16 @@ if(len(sys.argv) > 1):
             arg_index = sys.argv.index('--start') 
 
         CONTROLLERFLAG = True if ( sys.argv[arg_index + 1] == 'controller') else False
-        print("your default control has been set to:", (sys.argv[arg_index + 1]))        
+        print("your default control has been set to:", (sys.argv[arg_index + 1]))    
+
+    if(sys.argv.count('-c') == 1 or sys.argv.count('--camera') == 1):
+        try:
+            arg_index = sys.argv.index('-c') 
+        except:
+            arg_index = sys.argv.index('--camera') 
+
+        CONTROLLERFLAG = True
+        print("Camera has been set to: True")
     
     if(sys.argv.count('-rf') == 1 or sys.argv.count('-readfile')):
         try:
