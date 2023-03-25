@@ -85,7 +85,7 @@ def karlos(sys):
                 break
 
             # pushes data into raspberry pi
-            if (NETWORKFLAG and current_time - passed_time >= 1):
+            if (NETWORKFLAG):
                 publish.single(MQTTPATH, payload, hostname=MQTTSERVER) 
         
             passed_time = current_time 
