@@ -68,9 +68,9 @@ def pose_paylaod(THREEDMODE: bool, results, mp_pose):
             #print("Nose: ", nose_xyz)
             Left_Elbow_angles   = str(Elbow_angle_xy_left) + ',' + str(Elbow_angle_yz_left)
             if THREEDMODE:
-                payload = "pose3," + Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
+                payload = "pose," + Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
             else:
-                payload = "pose2," + Right_Shoulder_angles + ',' + Elbow_angle_xy_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_xy_left
+                payload = "pose," + Right_Shoulder_angles + ',' + Elbow_angle_xy_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_xy_left
     
             return payload
         except:
