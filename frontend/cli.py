@@ -3,6 +3,7 @@ enum_dict = {
                 "CONTROLLERFLAG"    : True,
                 "NETWORKFLAG"       : False,
                 "CAMERAFLAG"        : False,
+                "THREEDMODE"          : False,
                 "MQTTSERVER"        : "",
                 "MQTTPATH"          : "" 
 }

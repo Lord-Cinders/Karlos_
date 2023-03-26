@@ -14,6 +14,7 @@ def karlos(sys):
     CONTROLLERFLAG  = False
     NETWORKFLAG     = False
     CAMERAFLAG      = False
+    THREEDMODE      = True
     MQTTSERVER      = ""
     MQTTPATH        = "test_channel"
 
@@ -26,6 +27,7 @@ def karlos(sys):
         CAMERAFLAG      = data["CAMERAFLAG"]     == "True"
         MQTTSERVER      = data["MQTTSERVER"].strip('\"')
         MQTTPATH        = data["MQTTPATH"].strip('\"')
+        THREEDMODE        = data["THREEDMODE"]   == "True"
     
     
     # Network setup      
@@ -67,9 +69,12 @@ def karlos(sys):
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+            if(current_inputs[8] == 1 and current_time - passed_time >= 1):
+                THREEDMODE = not THREEDMODE
+
             if(joy.ControllerFlag == -1):
-                payload = pose_paylaod(results, mp_pose)
-            
+                payload = pose_paylaod(THREEDMODE, results, mp_pose)
+
             if( payload == - 1 or joy.ControllerFlag == 1):
                 payload = joy.calculate_payload(current_inputs)
                 
