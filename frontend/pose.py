@@ -27,10 +27,10 @@ def pose_paylaod(THREEDMODE: bool, results, mp_pose):
             elbow_xy_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y ]
             wrist_xy_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y ]
             
-            hip_yz_right        = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-            shoulder_yz_right   = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-            elbow_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-            wrist_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+            hip_yz_right        = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z * THREEDMODE,  landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y * THREEDMODE]
+            shoulder_yz_right   = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z * THREEDMODE,  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y * THREEDMODE]
+            elbow_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z * THREEDMODE,     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y * THREEDMODE]
+            wrist_yz_right      = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z * THREEDMODE,     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y * THREEDMODE] 
 
             # Left Hand
             hip_xy_left         = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,        landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y ]
@@ -38,10 +38,10 @@ def pose_paylaod(THREEDMODE: bool, results, mp_pose):
             elbow_xy_left       = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,      landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y ]
             wrist_xy_left       = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,      landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y  ]
             
-            hip_yz_left         = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z ,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y ] 
-            shoulder_yz_left    = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y ]
-            elbow_yz_left       = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z ,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y ]
-            wrist_yz_left       = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].z ,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y  ]
+            hip_yz_left         = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z * THREEDMODE ,       landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y * THREEDMODE] 
+            shoulder_yz_left    = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z * THREEDMODE,  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y * THREEDMODE]
+            elbow_yz_left       = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z * THREEDMODE ,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y * THREEDMODE]
+            wrist_yz_left       = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].z * THREEDMODE ,     landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y * THREEDMODE]
 
             
             # Calculate right Shoulder angle
@@ -70,7 +70,7 @@ def pose_paylaod(THREEDMODE: bool, results, mp_pose):
             if THREEDMODE:
                 payload = "pose," + Right_Shoulder_angles + ',' + Elbow_angle_yz_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_yz_left
             else:
-                payload = "pose," + Right_Shoulder_angles + ',' + Elbow_angle_xy_right + ',' +Left_Shoulder_angles + ',' + Elbow_angle_xy_left
+                payload = "pose," + str(Shoulder_angle_xy_right) + ',0' + ',' + Elbow_angle_xy_right + ',' +str(Shoulder_angle_xy_left) + ',0' + ',' + Elbow_angle_xy_left
     
             return payload
         except:
