@@ -71,6 +71,8 @@ def karlos(sys):
 
             if(current_inputs[8] == 1 and current_time - passed_time >= 1):
                 THREEDMODE = not THREEDMODE
+                if(NETWORKFLAG):
+                    publish.single(MQTTPATH, "pose,0,0,0,0,0,0", MQTTSERVER)
 
             if(joy.ControllerFlag == -1):
                 payload = pose_paylaod(THREEDMODE, results, mp_pose)
