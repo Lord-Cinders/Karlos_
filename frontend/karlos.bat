@@ -18,6 +18,7 @@ GOTO :EOF
 :NOTSETUP
 color 4
 ECHO Set up Python in PATH. Exiting.
+GOTO :EOF
 
 :HASPYTHON
 
