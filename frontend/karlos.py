@@ -71,6 +71,11 @@ def karlos(sys):
 
             if(current_inputs[8] == 1 and current_time - passed_time >= 1):
                 THREEDMODE = not THREEDMODE
+                if(THREEDMODE):
+                    print("Mode has been switched to 3D")
+                else:
+                    print("Mode has been switched to 2D")
+
                 if(NETWORKFLAG):
                     publish.single(MQTTPATH, "pose,0,0,0,0,0,0", MQTTSERVER)
 
