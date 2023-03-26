@@ -17,6 +17,7 @@ def karlos(sys):
     THREEDMODE      = True
     MQTTSERVER      = ""
     MQTTPATH        = "test_channel"
+    CAMERAPATH      = ""
 
     data = parse_argv(sys)
     if data == None and len(sys.argv) > 1:
@@ -25,14 +26,15 @@ def karlos(sys):
         CONTROLLERFLAG  = data["CONTROLLERFLAG"] == "True"
         NETWORKFLAG     = data["NETWORKFLAG"]    == "True"
         CAMERAFLAG      = data["CAMERAFLAG"]     == "True"
+        CAMERAPATH      = data["CAMERAPATH"].strip('\"')
         MQTTSERVER      = data["MQTTSERVER"].strip('\"')
         MQTTPATH        = data["MQTTPATH"].strip('\"')
-        THREEDMODE        = data["THREEDMODE"]   == "True"
-    
+        THREEDMODE      = data["THREEDMODE"]   == "True"
+    print(data)
     
     # Network setup      
     if(NETWORKFLAG and CAMERAFLAG):
-        webbrowser.open_new_tab("http://172.27.137.89/html")
+        webbrowser.open_new_tab(CAMERAPATH)
 
     mp_drawing      = mp.solutions.drawing_utils
     mp_pose         = mp.solutions.pose
