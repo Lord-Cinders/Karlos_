@@ -65,18 +65,19 @@ def smooth_controller(prevangles, inputs: list) -> list:
     prevangles = smoothed
     return smoothed 
 
+def move_ind(servo, inc):
+    try:
+        for _ in range(inc):
+            pca.servo[servo].angle += 1
+    except:
+        pass
+
 def move_controller(payload: list):
-    steps = 3
-    for _ in range(steps):
-        try:
-            pca.servo[SHOULDER_RIGHT_XY].angle += -(math.floor(payload[0])) / steps
-            pca.servo[SHOULDER_RIGHT_ZY].angle += math.floor(payload[1])    / steps
-        
-        # Left hand
-            pca.servo[SHOULDER_LEFT_XY].angle  += math.floor(payload[3])    / steps
-            pca.servo[SHOULDER_LEFT_ZY].angle  += -(math.floor(payload[4])) / steps
-        except:
-            pass
+    move_ind(SHOULDER_RIGHT_XY, -(math.floor(payload[0])))
+    move_ind(SHOULDER_RIGHT_ZY,   math.floor(payload[1]))
+    move_ind(SHOULDER_LEFT_XY,    math.floor(payload[3]))
+    move_ind(SHOULDER_LEFT_ZY,  -(math.floor(payload[4])))
+
     
 
 def on_connect(client, userdata, flags, rc):
