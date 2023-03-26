@@ -10,7 +10,6 @@ from controller import XboxController
 
 def karlos(sys):
     # Default ENUMS
-    POSEFLAG        = True
     CONTROLLERFLAG  = False
     NETWORKFLAG     = False
     CAMERAFLAG      = False
